@@ -585,19 +585,61 @@ function drawWaterWaves() {
 }
 
 function drawHUD() {
-  drawRoundedRect(20, 20, 390, 94, 18, "rgba(255,255,255,.88)");
+  drawRoundedRect(
+    20,
+    20,
+    430,
+    94,
+    18,
+    "rgba(255,255,255,.88)"
+  );
+
   ctx.fillStyle = "#13384a";
+
   ctx.font = "bold 22px Arial";
   ctx.fillText("부캉이 ENERGY", 34, 56);
 
-  drawRoundedRect(34, 74, 226, 20, 10, "#d7eaf0");
-  drawRoundedRect(34, 74, 226 * (state.energy / 100), 20, 10, state.energy > 35 ? "#2ac06f" : "#e85b4f");
+  drawRoundedRect(
+    34,
+    74,
+    226,
+    20,
+    10,
+    "#d7eaf0"
+  );
 
-  ctx.fillStyle = "#13384a";
+  drawRoundedRect(
+    34,
+    74,
+    226 * (state.energy / 100),
+    20,
+    10,
+    state.energy > 35
+      ? "#2ac06f"
+      : "#e85b4f"
+  );
+
   ctx.font = "bold 18px Arial";
-  ctx.fillText(`점수 ${Math.floor(state.score)}`, 286, 56);
-  ctx.fillText(`지식 ${state.knowledge}`, 286, 84);
-  ctx.fillText(`수학 ${LEVEL_NAME[state.level]}`, 405, 84);
+
+  ctx.fillText(
+    `점수 ${Math.floor(state.score)}`,
+    286,
+    52
+  );
+
+  ctx.fillText(
+    `지식 ${state.knowledge}`,
+    286,
+    82
+  );
+
+  ctx.font = "bold 16px Arial";
+
+  ctx.fillText(
+    `수학 ${LEVEL_NAME[state.level]}`,
+    360,
+    82
+  );
 }
 
 function drawTopMessage() {
