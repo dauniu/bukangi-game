@@ -7,13 +7,13 @@ html, body {
   height: 100%;
   font-family: Arial, "Noto Sans KR", sans-serif;
   background: linear-gradient(#8fd1eb, #74bddb);
-  overflow: hidden;
+ 
 }
 
 #app {
   position: relative;
   width: 100vw;
-  height: 100vh;
+ min-height: calc(100vh - 38px);
   display: grid;
   place-items: center;
 }
@@ -264,20 +264,32 @@ html, body {
 }
 
 .copyright {
-  position: fixed;
-  left: 0;
-  bottom: 8px;
   width: 100%;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+
+  color: #385461;
+
+  background: rgba(255,255,255,.28);
 
   text-align: center;
-  font-size: 12px;
-  color: #4b5563;
-
-  z-index: 9999;
 }
 
 .copyright a {
-  color: #374151;
+  margin-left: 4px;
+
+  color: #244653;
+
   font-weight: 700;
+
   text-decoration: none;
+}
+
+.copyright a:hover {
+  text-decoration: underline;
 }
