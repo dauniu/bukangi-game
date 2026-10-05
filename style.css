@@ -249,3 +249,22 @@ html, body {
     font-size: 32px;
   }
 }
+
+.copyright {
+  width: 100%;
+  padding: 14px 10px 20px;
+  text-align: center;
+  font-size: 13px;
+  color: #6b7280;
+  box-sizing: border-box;
+}
+
+.copyright a {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.copyright a:hover {
+  text-decoration: underline;
+}
