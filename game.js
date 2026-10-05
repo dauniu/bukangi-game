@@ -1,3 +1,31 @@
+import { initializeApp } from
+  "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  collection,
+  query,
+  orderBy,
+  limit,
+  getDocs
+} from
+  "https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyANbZrck1HKxwDqCzi9ff9d9K2ifUg0xVQ",
+  authDomain: "bukangi-game.firebaseapp.com",
+  projectId: "bukangi-game",
+  storageBucket: "bukangi-game.firebasestorage.app",
+  messagingSenderId: "826836429674",
+  appId: "1:826836429674:web:67ddc8671162488f6d9313"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
