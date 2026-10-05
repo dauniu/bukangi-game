@@ -251,20 +251,20 @@ html, body {
 }
 
 .copyright {
+  position: fixed;
+  left: 0;
+  bottom: 8px;
   width: 100%;
-  padding: 14px 10px 20px;
+
   text-align: center;
-  font-size: 13px;
-  color: #6b7280;
-  box-sizing: border-box;
+  font-size: 12px;
+  color: #4b5563;
+
+  z-index: 9999;
 }
 
 .copyright a {
-  color: inherit;
-  font-weight: 600;
+  color: #374151;
+  font-weight: 700;
   text-decoration: none;
-}
-
-.copyright a:hover {
-  text-decoration: underline;
 }
