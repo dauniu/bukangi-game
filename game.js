@@ -304,17 +304,17 @@ function spawnObject(now) {
   const r = Math.random();
   let type = "fish";
 
-  if (r < 0.45) {
-    type = "fish";
-  } else if (r < 0.53) {
-    type = "chicken";
-  } else if (r < 0.63) {
-    type = "trashCan";
-  } else if (r < 0.70) {
-    type = "trashBag";
-  } else {
-    type = "net";
-  }
+ if (r < 0.48) {
+  type = "fish";
+} else if (r < 0.58) {
+  type = "chicken";
+} else if (r < 0.68) {
+  type = "trashCan";
+} else if (r < 0.80) {
+  type = "trashBag";
+} else {
+  type = "net";
+}
 
   const waterTop = 250;
   const waterBottom = H - 90;
