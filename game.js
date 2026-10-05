@@ -121,7 +121,26 @@ const shark = {
 };
 
 const objects = [];
+function getTodayKey() {
+  const now = new Date();
 
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getPlayerId() {
+  let playerId = localStorage.getItem("bukangiPlayerId");
+
+  if (!playerId) {
+    playerId = crypto.randomUUID();
+    localStorage.setItem("bukangiPlayerId", playerId);
+  }
+
+  return playerId;
+}
 function rand(min, max) {
   return Math.random() * (max - min) + min;
 }
@@ -159,44 +178,121 @@ function resetGame() {
   quizEl.classList.add("hidden");
 }
 
-function getScores() {
+
+async function saveScore() {
   try {
-    return JSON.parse(localStorage.getItem("bukangiScores") || "[]");
-  } catch (e) {
-    return [];
-  }
-}
+    const today = getTodayKey();
+    const playerId = getPlayerId();
 
-function saveScore() {
-  const scores = getScores();
-  scores.push({
-    name: state.playerName,
-    score: Math.floor(state.score),
-    knowledge: state.knowledge,
-    level: state.level,
-    time: Date.now(),
-  });
-  scores.sort((a, b) => b.score - a.score || b.knowledge - a.knowledge);
-  localStorage.setItem("bukangiScores", JSON.stringify(scores.slice(0, 10)));
-}
+    const scoreRef = doc(
+      db,
+      "leaderboards",
+      today,
+      "scores",
+      playerId
+    );
 
-function showLeaderboard() {
-  const scores = getScores();
-  rankListEl.innerHTML = "";
+    const oldSnapshot = await getDoc(scoreRef);
+    const newScore = Math.floor(state.score);
 
-  if (!scores.length) {
-    const li = document.createElement("li");
-    li.innerHTML = "<span>아직 기록이 없어!</span><span>첫 플레이어가 되어봐 😎</span>";
-    rankListEl.appendChild(li);
-  } else {
-    scores.forEach((row, idx) => {
-      const li = document.createElement("li");
-      li.innerHTML = `<span>${idx + 1}위 · ${row.name}</span><span>${row.score}점 · ${LEVEL_NAME[row.level]}</span>`;
-      rankListEl.appendChild(li);
+    // 오늘 이미 더 높은 점수가 있으면 저장 안 함
+    if (
+      oldSnapshot.exists() &&
+      oldSnapshot.data().score >= newScore
+    ) {
+      return;
+    }
+
+    await setDoc(scoreRef, {
+      name: state.playerName || "부캉이친구",
+      score: newScore,
+      knowledge: state.knowledge,
+      level: state.level,
+      updatedAt: Date.now()
     });
-  }
 
+    console.log("온라인 순위 저장 성공");
+
+  } catch (error) {
+    console.error("온라인 순위 저장 실패:", error);
+  }
+}
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+async function showLeaderboard() {
   leaderboardEl.classList.remove("hidden");
+
+  rankListEl.innerHTML = `
+    <li>
+      <span>순위를 불러오는 중...</span>
+    </li>
+  `;
+
+  try {
+    const today = getTodayKey();
+
+    const scoresRef = collection(
+      db,
+      "leaderboards",
+      today,
+      "scores"
+    );
+
+    const q = query(
+      scoresRef,
+      orderBy("score", "desc"),
+      limit(10)
+    );
+
+    const snapshot = await getDocs(q);
+
+    rankListEl.innerHTML = "";
+
+    if (snapshot.empty) {
+      rankListEl.innerHTML = `
+        <li>
+          <span>오늘 첫 기록의 주인공이 되어봐! 🦈</span>
+        </li>
+      `;
+      return;
+    }
+
+    let rank = 1;
+
+    snapshot.forEach((docSnapshot) => {
+      const row = docSnapshot.data();
+      const li = document.createElement("li");
+
+      let medal = "";
+      if (rank === 1) medal = "🥇";
+      else if (rank === 2) medal = "🥈";
+      else if (rank === 3) medal = "🥉";
+      else medal = `${rank}위`;
+
+      li.innerHTML = `
+        <span>${medal} ${escapeHtml(row.name)}</span>
+        <span>${row.score}점 · ${LEVEL_NAME[row.level] || ""}</span>
+      `;
+
+      rankListEl.appendChild(li);
+      rank++;
+    });
+
+  } catch (error) {
+    console.error(error);
+
+    rankListEl.innerHTML = `
+      <li>
+        <span>순위를 불러오지 못했어요 😢</span>
+      </li>
+    `;
+  }
 }
 
 function showMessage(text, ms = 900) {
