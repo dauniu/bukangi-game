@@ -385,7 +385,14 @@ function sharkHitbox() {
 function overlap(a, b) {
   return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
-
+function netHitbox(obj) {
+  return {
+    x: obj.x + 18,
+    y: obj.y + 20,
+    w: obj.w - 36,
+    h: obj.h - 40,
+  };
+}
 function moveShark(dir) {
   if (!state.started || state.gameOver || state.pausedForQuiz) return;
   shark.targetY += dir * 90;
@@ -914,7 +921,12 @@ function update(now, dt) {
     const obj = objects[i];
     obj.x -= state.speed;
 
-    if (overlap(hitbox, obj)) {
+   const collisionTarget =
+  obj.type === "net"
+    ? netHitbox(obj)
+    : obj;
+
+if (overlap(hitbox, collisionTarget)) {
       if (obj.type === "fish") {
         state.energy = Math.min(100, state.energy + 12);
         state.score += 80;
