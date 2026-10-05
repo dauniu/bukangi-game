@@ -99,6 +99,11 @@ const state = {
   sharkMood: "normal",
   sharkMoodUntil: 0,
   knowledge: 0,
+
+speedNotice5000: false,
+speedNotice10000: false,
+speedNotice15000: false,
+	
   speed: 5.2,
   t: 0,
   lastSpawnAt: 0,
@@ -155,6 +160,9 @@ function resetGame() {
   state.playerName = (playerNameEl.value || "부캉이친구").trim().slice(0, 10);
   state.energy = 70;
   state.score = 0;
+	state.speedNotice5000 = false;
+	state.speedNotice10000 = false;
+	state.speedNotice15000 = false;
   state.knowledge = 0;
   state.speed = 5.2;
   state.t = 0;
@@ -301,19 +309,64 @@ function showMessage(text, ms = 900) {
 }
 
 function spawnObject(now) {
-  const r = Math.random();
-  let type = "fish";
+ const r = Math.random();
+let type = "fish";
 
- if (r < 0.48) {
-  type = "fish";
-} else if (r < 0.58) {
-  type = "chicken";
-} else if (r < 0.68) {
-  type = "trashCan";
-} else if (r < 0.80) {
-  type = "trashBag";
+if (state.score >= 15000) {
+  // 15000점 이상
+  if (r < 0.34) {
+    type = "fish";
+  } else if (r < 0.50) {
+    type = "chicken";
+  } else if (r < 0.65) {
+    type = "trashCan";
+  } else if (r < 0.80) {
+    type = "trashBag";
+  } else {
+    type = "net";
+  }
+
+} else if (state.score >= 10000) {
+  // 10000~14999점
+  if (r < 0.38) {
+    type = "fish";
+  } else if (r < 0.53) {
+    type = "chicken";
+  } else if (r < 0.67) {
+    type = "trashCan";
+  } else if (r < 0.80) {
+    type = "trashBag";
+  } else {
+    type = "net";
+  }
+
+} else if (state.score >= 5000) {
+  // 5000~9999점
+  if (r < 0.43) {
+    type = "fish";
+  } else if (r < 0.56) {
+    type = "chicken";
+  } else if (r < 0.68) {
+    type = "trashCan";
+  } else if (r < 0.80) {
+    type = "trashBag";
+  } else {
+    type = "net";
+  }
+
 } else {
-  type = "net";
+  // 0~4999점
+  if (r < 0.48) {
+    type = "fish";
+  } else if (r < 0.58) {
+    type = "chicken";
+  } else if (r < 0.68) {
+    type = "trashCan";
+  } else if (r < 0.80) {
+    type = "trashBag";
+  } else {
+    type = "net";
+  }
 }
 
   const waterTop = 250;
@@ -893,6 +946,38 @@ function update(now, dt) {
   if (!state.started || state.gameOver || state.pausedForQuiz) return;
 
   state.t += dt;
+if (state.score >= 15000) {
+  state.speed = 7.2;
+} else if (state.score >= 10000) {
+  state.speed = 6.6;
+} else if (state.score >= 5000) {
+  state.speed = 5.9;
+} else {
+  state.speed = 5.2;
+}
+	if (
+  state.score >= 5000 &&
+  !state.speedNotice5000
+) {
+  state.speedNotice5000 = true;
+  showMessage("⚡ 부캉이가 더 빨라졌어요!", 1200);
+}
+
+if (
+  state.score >= 10000 &&
+  !state.speedNotice10000
+) {
+  state.speedNotice10000 = true;
+  showMessage("⚡ 쓰레기가 더 많아졌어요!", 1200);
+}
+
+if (
+  state.score >= 15000 &&
+  !state.speedNotice15000
+) {
+  state.speedNotice15000 = true;
+  showMessage("🔥 최고 난이도 구간!", 1200);
+}
   backgroundX -= backgroundSpeed;
 
   if (backgroundX <= -W) {
