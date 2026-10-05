@@ -31,6 +31,7 @@ const ctx = canvas.getContext("2d");
 
 const setupEl = document.getElementById("setup");
 const leaderboardEl = document.getElementById("leaderboard");
+const levelBannerEl = document.getElementById("levelBanner");
 const quizEl = document.getElementById("quiz");
 const rankBtn = document.getElementById("rankBtn");
 const openRankBtn = document.getElementById("openRankBtn");
@@ -126,6 +127,22 @@ const shark = {
 };
 
 const objects = [];
+
+function showLevelBanner(text) {
+  levelBannerEl.textContent = text;
+
+  levelBannerEl.classList.remove("hidden");
+
+  // 애니메이션 다시 시작
+  levelBannerEl.style.animation = "none";
+  void levelBannerEl.offsetWidth;
+  levelBannerEl.style.animation = "";
+
+  setTimeout(() => {
+    levelBannerEl.classList.add("hidden");
+  }, 1400);
+}
+
 function getTodayKey() {
   const now = new Date();
 
@@ -960,7 +977,7 @@ if (state.score >= 15000) {
   !state.speedNotice5000
 ) {
   state.speedNotice5000 = true;
-  showMessage("⚡ 부캉이가 더 빨라졌어요!", 1200);
+   showLevelBanner("⚡ 부캉이가 더 빨라졌어요!");
 }
 
 if (
@@ -968,7 +985,7 @@ if (
   !state.speedNotice10000
 ) {
   state.speedNotice10000 = true;
-  showMessage("⚡ 쓰레기가 더 많아졌어요!", 1200);
+ showLevelBanner("🚨 쓰레기가 더 많아졌어요!");
 }
 
 if (
@@ -976,7 +993,7 @@ if (
   !state.speedNotice15000
 ) {
   state.speedNotice15000 = true;
-  showMessage("🔥 최고 난이도 구간!", 1200);
+  showLevelBanner("🔥 최고 난이도 구간!");
 }
   backgroundX -= backgroundSpeed;
 
