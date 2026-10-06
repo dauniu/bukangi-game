@@ -376,17 +376,17 @@ html, body {
 /* 모바일 가로모드 */
 @media (max-height: 600px) and (orientation: landscape) {
 
-  #app {
+   #app {
     width: 100%;
-    min-height: calc(100dvh - 32px);
-    height: auto;
+    min-height: 100dvh;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    overflow: hidden;
+    overflow: visible;
   }
+
 
   #game {
     width: auto;
@@ -412,8 +412,6 @@ html, body {
     font-size: 11px;
     padding: 6px 10px;
 
-  .copyright {
-    height: 32px;
-    font-size: 10px;
+  .copyright { display: none; }
   }
 }
