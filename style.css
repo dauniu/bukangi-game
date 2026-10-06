@@ -408,7 +408,9 @@ html, body {
     font-size: 15px;
     border-radius: 14px;
   }
-
+  #helpText {
+    font-size: 11px;
+    padding: 6px 10px;
 
   .copyright {
     height: 32px;
