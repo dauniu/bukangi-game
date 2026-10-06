@@ -101,9 +101,7 @@ const state = {
   sharkMoodUntil: 0,
   knowledge: 0,
 
-speedNotice5000: false,
-speedNotice10000: false,
-speedNotice15000: false,
+  difficultyStage: 0,
 	
   speed: 5.2,
   t: 0,
@@ -177,9 +175,7 @@ function resetGame() {
   state.playerName = (playerNameEl.value || "부캉이친구").trim().slice(0, 10);
   state.energy = 70;
   state.score = 0;
-	state.speedNotice5000 = false;
-	state.speedNotice10000 = false;
-	state.speedNotice15000 = false;
+  state.difficultyStage = 0;
   state.knowledge = 0;
   state.speed = 5.2;
   state.t = 0;
@@ -326,12 +322,20 @@ function showMessage(text, ms = 900) {
 }
 
 function spawnObject(now) {
- const r = Math.random();
+const r = Math.random();
 let type = "fish";
 
-if (state.score >= 15000) {
-  // 15000점 이상
-  if (r < 0.34) {
+// difficultyStage
+// 0 = 0~2999점
+// 1 = 3000~5999점
+// 2 = 6000~8999점
+// 3 = 9000~11999점
+// 4 이상 = 12000점 이상
+
+if (state.difficultyStage >= 4) {
+  // 12000점 이상
+  // 물고기 32 / 치킨 18 / 캔 15 / 봉투 15 / 그물 20
+  if (r < 0.32) {
     type = "fish";
   } else if (r < 0.50) {
     type = "chicken";
@@ -343,11 +347,27 @@ if (state.score >= 15000) {
     type = "net";
   }
 
-} else if (state.score >= 10000) {
-  // 10000~14999점
-  if (r < 0.38) {
+} else if (state.difficultyStage === 3) {
+  // 9000~11999점
+  // 물고기 36 / 치킨 16 / 캔 14 / 봉투 14 / 그물 20
+  if (r < 0.36) {
     type = "fish";
-  } else if (r < 0.53) {
+  } else if (r < 0.52) {
+    type = "chicken";
+  } else if (r < 0.66) {
+    type = "trashCan";
+  } else if (r < 0.80) {
+    type = "trashBag";
+  } else {
+    type = "net";
+  }
+
+} else if (state.difficultyStage === 2) {
+  // 6000~8999점
+  // 물고기 40 / 치킨 14 / 캔 13 / 봉투 13 / 그물 20
+  if (r < 0.40) {
+    type = "fish";
+  } else if (r < 0.54) {
     type = "chicken";
   } else if (r < 0.67) {
     type = "trashCan";
@@ -357,9 +377,10 @@ if (state.score >= 15000) {
     type = "net";
   }
 
-} else if (state.score >= 5000) {
-  // 5000~9999점
-  if (r < 0.43) {
+} else if (state.difficultyStage === 1) {
+  // 3000~5999점
+  // 물고기 44 / 치킨 12 / 캔 12 / 봉투 12 / 그물 20
+  if (r < 0.44) {
     type = "fish";
   } else if (r < 0.56) {
     type = "chicken";
@@ -372,7 +393,8 @@ if (state.score >= 15000) {
   }
 
 } else {
-  // 0~4999점
+  // 0~2999점
+  // 물고기 48 / 치킨 10 / 캔 10 / 봉투 12 / 그물 20
   if (r < 0.48) {
     type = "fish";
   } else if (r < 0.58) {
@@ -963,38 +985,26 @@ function update(now, dt) {
   if (!state.started || state.gameOver || state.pausedForQuiz) return;
 
   state.t += dt;
-if (state.score >= 15000) {
-  state.speed = 7.2;
-} else if (state.score >= 10000) {
-  state.speed = 6.6;
-} else if (state.score >= 5000) {
-  state.speed = 5.9;
-} else {
-  state.speed = 5.2;
-}
-	if (
-  state.score >= 5000 &&
-  !state.speedNotice5000
-) {
-  state.speedNotice5000 = true;
-   showLevelBanner("⚡ 부캉이가 더 빨라졌어요!");
+  const newStage = Math.floor(state.score / 3000);
+
+if (newStage !== state.difficultyStage) {
+  state.difficultyStage = newStage;
+
+  if (newStage > 0) {
+    showLevelBanner(
+      `⚡ LEVEL ${newStage + 1}! 더 빨라지고 장애물이 자주 나와요!`
+    );
+  }
 }
 
-if (
-  state.score >= 10000 &&
-  !state.speedNotice10000
-) {
-  state.speedNotice10000 = true;
- showLevelBanner("🚨 쓰레기가 더 많아졌어요!");
-}
+// 3000점마다 속도 증가
+state.speed = 5.2 + state.difficultyStage * 0.45;
 
-if (
-  state.score >= 15000 &&
-  !state.speedNotice15000
-) {
-  state.speedNotice15000 = true;
-  showLevelBanner("🔥 최고 난이도 구간!");
-}
+// 3000점마다 장애물 등장 간격 단축
+state.spawnEvery = Math.max(
+  500,
+  950 - state.difficultyStage * 70
+);
   backgroundX -= backgroundSpeed;
 
   if (backgroundX <= -W) {
